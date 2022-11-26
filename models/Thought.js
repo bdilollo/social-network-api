@@ -23,3 +23,7 @@ const thoughtSchema = new Schema(
         timestamps: true
     }
 );
+
+const Thought = model('thought', thoughtSchema);
+
+module.exports = Thought;
