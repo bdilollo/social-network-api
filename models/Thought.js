@@ -15,14 +15,21 @@ const thoughtSchema = new Schema(
             // TODO: use a getter method to format the timestamp on query
         },
         username: {
-
+            type: String,
+            required: true
         },
         reactions: [reactionSchema]
     },
     {
+        toJSON: { virtuals: true },
+        id: false,
         timestamps: true
     }
 );
+
+thoughtSchema.virtual('reactionCount').get(function () {
+    return this.reactions.length;
+});
 
 const Thought = model('thought', thoughtSchema);
 
