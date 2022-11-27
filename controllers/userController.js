@@ -51,10 +51,30 @@ module.exports = {
     },
 
     addFriend(req, res) {
-        res.send('addFriend route');
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+        )
+        .then((updatedUser) => 
+            !updatedUser
+                ? res.status(404).json({ message: 'No user with that ID!' })
+                : res.json(updatedUser)
+        )
+        .catch((err) => res.status(500).json(err))
     },
 
     deleteFriend(req, res) {
-        res.send('deleteFriend route');
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+        )
+        .then((updatedUser) =>
+            !updatedUser
+                ? res.status(404).json({ message: 'No user with that ID!' })
+                : res.json(updatedUser)
+        )
+        .catch((err) => res.status(500).json(err))
     }
 };
