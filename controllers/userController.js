@@ -1,10 +1,12 @@
 const { User, Thought } = require('../models');
 const { ObjectId } = require('mongoose').Types;
+const mongoose = require('mongoose');
 
 
 module.exports = {
     getUsers(req, res) {
         User.find()
+            .select('-__v')
             .then((posts) => res.json(posts))
             .catch((err) => res.status(500).json(err));
     },
@@ -16,7 +18,9 @@ module.exports = {
     },
 
     getSingleUser(req, res) {
+        console.log(mongoose.isValidObjectId(req.params.userId));
         User.findOne({ _id: req.params.userId })
+            .select('-__v')
             .populate('thoughts')
             .populate('friends')
             .then((user) => 
