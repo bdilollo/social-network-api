@@ -24,9 +24,9 @@ module.exports = {
             .populate('thoughts')
             .populate('friends')
             .then((user) => 
-                !user ? res.status(404).json({ message: 'No user with that ID' }) : res.json(post)
+                !user ? res.status(404).json({ message: 'No user with that ID' }) : res.json(user)
             )
-            .catch((err) => res.status(500).json(err));
+            .catch((err) => console.log(err))
     },
 
     updateUser(req, res) {
@@ -50,7 +50,7 @@ module.exports = {
                     ? res.status(404).json({ message: `Couldn't find a user with that ID!` })
                     : Thought.deleteMany({ _id: { $in: deletedUser.thoughts } })
                 )
-            .then((deletedUser) => res.json({ message: `Deleted user ${deletedUser.username} and all associated thoughts.`}))
+            .then(() => res.json({ message: `Deleted user and all associated thoughts.`}))
             .catch((err) => res.status(500).json(err));
     },
 
