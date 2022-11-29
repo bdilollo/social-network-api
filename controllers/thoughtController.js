@@ -5,12 +5,14 @@ const { ObjectId } = require('mongoose').Types;
 module.exports = {
     getThoughts(req, res) {
         Thought.find()
+            .select('-__v')
             .then((thoughts) => res.json(thoughts))
             .catch((err) => res.status(500).json(err))
     },
     
     createThought(req, res) {
         Thought.create(req.body)
+            .select('-__v')
             .then((newThought) => {
                 return User.findOneAndUpdate(
                         { username: req.body.username },
@@ -28,6 +30,7 @@ module.exports = {
 
     getSingleThought(req, res) {
         Thought.findOne({ _id: req.params.thoughtId })
+            .select('-__v')
             .then((thought) => 
                 !thought
                     ? res.status(404).json({ message: 'No thought with that ID!' })
@@ -41,6 +44,7 @@ module.exports = {
             { $set: req.body },
             { runValidators: true, new: true }
         )
+        .select('-__v')
         .then((updatedThought) => 
             !updatedThought
                 ? res.status(404).json({ message: 'No thought with that ID!' })
@@ -51,6 +55,7 @@ module.exports = {
 
     deleteThought(req, res) {
         Thought.findOneAndDelete({ _id: req.params.thoughtId })
+            .select('-__v')
             .then((deletedThought) =>
                 !deletedThought
                     ? res.status(404).json({ message: 'No thought with that ID!' })
@@ -73,6 +78,7 @@ module.exports = {
             { $push: { reactions: req.body } },
             { runValidators: true, new: true }
         )
+        .select('-__v')
         .then((updatedThought) =>
             !updatedThought
                 ? res.status(404).json({ message: 'No thought with that ID!' })
@@ -86,6 +92,7 @@ module.exports = {
             { $pull: { reactions: { reactionId: req.params.reactionId } } },
             { runValidators: true, new: true }
         )
+        .select('-__v')
         .then((updatedThought) => 
             !updatedThought
                 ? res.status(404).json({ message: 'No thought with that ID!' })

@@ -13,12 +13,12 @@ module.exports = {
 
     createUser(req, res) {
         User.create(req.body)
+            .select('-__v')
             .then((newUser) => res.json(newUser))
             .catch((err) => res.status(500).json(err));
     },
 
     getSingleUser(req, res) {
-        console.log(mongoose.isValidObjectId(req.params.userId));
         User.findOne({ _id: req.params.userId })
             .select('-__v')
             .populate('thoughts')
@@ -35,6 +35,7 @@ module.exports = {
             { $set: req.body },
             { runValidators: true, new: true }
         )
+        .select('-__v')
         .then((updatedUser) => 
             !updatedUser
                 ? res.status(404).json({ message: 'No user with this ID!' })
@@ -45,13 +46,15 @@ module.exports = {
 
     deleteUser(req, res) {
         User.findOneAndDelete({ _id: req.params.userId })
-            .then((deletedUser) => 
-                !deletedUser
-                    ? res.status(404).json({ message: `Couldn't find a user with that ID!` })
-                    : Thought.deleteMany({ _id: { $in: deletedUser.thoughts } })
-                )
-            .then(() => res.json({ message: `Deleted user and all associated thoughts.`}))
-            .catch((err) => res.status(500).json(err));
+        .then((deletedUser) => {
+            if(!deletedUser) {
+                res.status(404).json({ message: `Couldn't find a user with that ID!` })
+            }
+            Thought.deleteMany({ _id: { $in: deletedUser.thoughts } });
+            return deletedUser;
+    })        
+        .then(res.json({ message: `Deleted user ${deletedUser.username} and all associated thoughts.`}))
+        .catch((err) => res.status(500).json(err))
     },
 
     addFriend(req, res) {
@@ -60,6 +63,7 @@ module.exports = {
             { $addToSet: { friends: req.params.friendId } },
             { runValidators: true, new: true }
         )
+        .select('-__v')
         .then((updatedUser) => 
             !updatedUser
                 ? res.status(404).json({ message: 'No user with that ID!' })
