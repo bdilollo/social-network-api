@@ -14,7 +14,7 @@ The repo contains a package.json with the necessary dependencies. Run ```npm ins
 ---
 
 ## Usage
-[Video demonstration of application]()
+[Video demonstration of application](https://drive.google.com/file/d/1zkdrDzSPlpYP2kHzEanhzC-jYP_5ynBw/view)
 
 ---
 
